@@ -7,8 +7,7 @@ declare_id!("9huWatngu9PV7nHSDjshBgbgA3HXPNKMQ4Q6VWgemF5V");
 pub mod sample {
     use super::*;
 
-    pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
-        let amount = 500_000_000;
+    pub fn transfer(ctx: Context<Transfer>, amount: u64) -> Result<()> {
 
         system_program::transfer(
             CpiContext::new(
@@ -27,7 +26,7 @@ pub mod sample {
 }
 
 #[derive(Accounts)]
-pub struct Initialize<'info> {
+pub struct Transfer<'info> {
     #[account(mut)]
     pub from: Signer<'info>,
 
