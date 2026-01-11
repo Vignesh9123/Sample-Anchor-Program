@@ -47,7 +47,10 @@ pub mod sample {
     pub fn transfer_to_user_from_vault(ctx: Context<TransferToUserFromVault>, amount: u64)->Result<()>{
         **ctx.accounts.vault.to_account_info().try_borrow_mut_lamports()? -= amount;
         **ctx.accounts.user.to_account_info().try_borrow_mut_lamports()? += amount;
-
+        Ok(())
+    }
+    
+    pub fn close_vault(_ctx: Context<CloseVault>) -> Result<()>{
         Ok(())
     }
 }
@@ -108,7 +111,21 @@ pub struct TransferToUserFromVault<'info>{
 
 }
 
+#[derive(Accounts)]
+pub struct CloseVault<'info>{
+    #[account(
+        mut, 
+        seeds = [b"vault",user.key().as_ref()],
+        bump,
+        close = user
+    )]
+    pub vault: Account<'info,VaultStruct>,
 
+    #[account(
+        mut
+    )]
+    pub user: Signer<'info>
+}
 #[account]
 pub struct VaultStruct {
     pub authority: Pubkey,

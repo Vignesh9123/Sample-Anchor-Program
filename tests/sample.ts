@@ -107,5 +107,35 @@ describe("sample", () => {
     .rpc()
     console.log("Transaction 3: ", tx3)
   })
+
+  it("is_closing_account", async()=>{
+    const user = anchor.web3.Keypair.generate();
+    const sig = await provider.connection.requestAirdrop(user.publicKey, anchor.web3.LAMPORTS_PER_SOL);
+    await provider.connection.confirmTransaction(sig);
+    const tx = await program.methods.initializeVault()
+    .accounts({
+      user:user.publicKey
+    })
+    .signers([user])
+    .rpc()
+    let transfer_amount = new anchor.BN(anchor.web3.LAMPORTS_PER_SOL/2)
+
+    const tx2 = await program.methods.transferToVault(transfer_amount)
+    .accounts({
+      user: user.publicKey
+    })
+    .signers([user])
+    .rpc()
+    const tx5 = await program.methods.closeVault()
+    .accounts({
+      user: user.publicKey
+    })
+    .signers([user])
+    .rpc()
+    
+    console.log("Transaction: ",tx5)
+    const userBalance = await provider.connection.getBalance(user.publicKey);
+    expect(userBalance).to.be.equal(anchor.web3.LAMPORTS_PER_SOL)
+  })
   
 });
